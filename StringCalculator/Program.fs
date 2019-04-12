@@ -29,7 +29,8 @@ module StringCalculator =
   then failwith("Negatives not allowed: " + String.Join(", ",  numbers |> Seq.filter (fun x ->   isDigit x && System.Int32.Parse x < 0))) 
   else
 // parse each string to int and then sum the numbers in the list 
-  let sum =   numbers |> Seq.filter (fun x ->  isDigit x)  |> Seq.map System.Int32.Parse  |> Seq.sum
+  let sum =   numbers |> Seq.filter (fun x ->  isDigit x)  |> Seq.map System.Int32.Parse
+                      |> Seq.filter (fun x -> x <=1000) |> Seq.sum
   (sum)
    with
     | :? System.Exception as ex -> 
@@ -52,5 +53,5 @@ System.Console.WriteLine(String.Concat(@"Test 6: (//\n\n1\n-2\n-9) ",StringCalcu
 System.Console.WriteLine(String.Concat(@"Test 7: (1,2\n3) ",StringCalculator.addNumbers ("1,2\n3")))
 // invlaid input return -1
 System.Console.WriteLine(String.Concat(@"Test 8: invalid input return -1 (1,\n) ",StringCalculator.addNumbers ("1,\n")))
-
+System.Console.WriteLine(String.Concat(@"Test 9: Test Case when a number more than 1001 (1,1000,1001,500) ",StringCalculator.addNumbers ("1,1000,1001,500")))
 0
