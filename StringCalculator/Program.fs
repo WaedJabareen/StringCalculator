@@ -16,17 +16,24 @@ module StringCalculator =
     
 // add numbers function that calculate sume of numbers in string 
  let addNumbers (input:string):int =
+ try
 // check if input is empty
   if(String.IsNullOrEmpty(input)) then 0 else
 // if input is followed by two chacter
-  if(Regex.IsMatch(input, "\d[^a-z0-9 ][^a-z0-9 ]")) then -1 else 
+   if(Regex.IsMatch(input, "\d[^a-z0-9-][^a-z0-9-]")) then -1 else 
 // split input by delimiter 
   let d = getDelimiter (input, "^(//.*\n)(.*)")
   let numbers = input.Split([|d; "\n"|], StringSplitOptions.None)
+ // handle negative numbers
+  if( Array.exists (fun elem -> isDigit elem && System.Int32.Parse elem < 0) numbers)  
+  then failwith("Negatives not allowed: " + String.Join(", ",  numbers |> Seq.filter (fun x ->   isDigit x && System.Int32.Parse x < 0))) 
+  else
 // parse each string to int and then sum the numbers in the list 
   let sum =   numbers |> Seq.filter (fun x ->  isDigit x)  |> Seq.map System.Int32.Parse  |> Seq.sum
   (sum)
-
+   with
+    | :? System.Exception as ex -> 
+          Console.Write( ex.Message);-1
 [<EntryPoint>]
 let main arge = 
 // Test 1 : "1"
@@ -40,7 +47,7 @@ System.Console.WriteLine(String.Concat(@"Test 4: (1;2;4) ",StringCalculator.addN
 // Test 5 : test case when send,  delimiter at first line 
 System.Console.WriteLine(String.Concat(@"Test 5: (//,\n1,2,9) ",StringCalculator.addNumbers ("//,\n1,2,9")))
 // Test 6 : test case when send \n  delimiter at first line 
-System.Console.WriteLine(String.Concat(@"Test 6: (//\n\n1\n2\n9) ",StringCalculator.addNumbers ("//\n\n1\n2\n9")))
+System.Console.WriteLine(String.Concat(@"Test 6: (//\n\n1\n-2\n-9) ",StringCalculator.addNumbers ("//\n\n1\n-2\n-9")))
 // Test 7 : test case when send delimiter is not in  first line 
 System.Console.WriteLine(String.Concat(@"Test 7: (1,2\n3) ",StringCalculator.addNumbers ("1,2\n3")))
 // invlaid input return -1
